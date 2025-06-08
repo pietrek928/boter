@@ -1,0 +1,10 @@
+[tool.poetry]
+name = "xbot"
+version = "0.0.1"
+description = "Test xbot"
+authors = ["pietrek <pietrek.j@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+

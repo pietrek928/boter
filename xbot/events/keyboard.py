@@ -11,11 +11,13 @@ MAPVK_VK_TO_VSC = 0
 MAPVK_VSC_TO_VK = 1
 MAPVK_VSC_TO_VK_EX = 3
 
+
 # KeyBdInput Flags
 KEYEVENTF_EXTENDEDKEY = 0x0001
 KEYEVENTF_KEYUP = 0x0002
 KEYEVENTF_SCANCODE = 0x0008
 KEYEVENTF_UNICODE = 0x0004
+
 
 # Keyboard Scan Code Mappings
 KEYBOARD_SCANCODE_MAPPING = {
@@ -226,4 +228,3 @@ async def send_key_string(kbd_executor, s, key_delay=0.025, delay_rand=0.025):
         # await loop.run_in_executor(kbd_executor, win32api.keybd_event, k, 0, win32con.KEYEVENTF_KEYUP, 0)
         await loop.run_in_executor(kbd_executor, keyUp, k)
         await sleep(uniform(key_delay, key_delay + delay_rand))
-
