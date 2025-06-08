@@ -1,10 +1,11 @@
-[tool.poetry]
+[project]
 name = "xbot"
 version = "0.0.1"
 description = "Test xbot"
-authors = ["pietrek <pietrek.j@gmail.com>"]
+authors = [{name = "pietrek", email = "pietrek.j@gmail.com"}]
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = ">=3.10"
-
+dependencies = [
+    "opencv-python",
+    "easyocr"
+]
+requires-python = ">=3.8"
