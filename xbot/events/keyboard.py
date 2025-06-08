@@ -200,6 +200,20 @@ def keyUp(hexKeyCode, keybdFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP):
     SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
 
 
+async def press_key(kbd_executor, key_name, key_delay=0.025, delay_rand=0.025):
+    if key_name not in KEY_MAP:
+        return
+
+    loop = get_running_loop()
+    key_codes = KEY_MAP[key_name]
+    for k in key_codes[::-1]:
+        await loop.run_in_executor(kbd_executor, keyDown, k)
+        await sleep(uniform(key_delay, key_delay + delay_rand))
+    for k in key_codes:
+        await loop.run_in_executor(kbd_executor, keyUp, k)
+        await sleep(uniform(key_delay, key_delay + delay_rand))
+
+
 async def send_key_string(kbd_executor, s, key_delay=0.025, delay_rand=0.025):
     pressed_keys = set()
     loop = get_running_loop()
