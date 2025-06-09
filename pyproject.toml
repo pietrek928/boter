@@ -6,6 +6,7 @@ authors = [{name = "pietrek", email = "pietrek.j@gmail.com"}]
 readme = "README.md"
 dependencies = [
     "opencv-python",
-    "easyocr"
+    "easyocr",
+    "mss"
 ]
 requires-python = ">=3.8"

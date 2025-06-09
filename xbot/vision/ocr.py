@@ -5,7 +5,7 @@ def get_ocr_reader():
     return Reader(
         ['pl', 'en'], 
         gpu=True,  # Enable GPU if available for faster processing
-        model_storage_directory='~/model_storage',
+        # model_storage_directory='~/model_storage',
         download_enabled=True
     )
 

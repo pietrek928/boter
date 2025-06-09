@@ -2,18 +2,17 @@ import numpy as np
 import cv2 as cv
 
 
-# white hsv = [0.0, 0.0, 255.0]
-def match_color(im_bgr, col_hsv, score_pow=1.3):
-    hsv_image = cv.cvtColor(im_bgr, cv.COLOR_BGR2HSV)
-    white_hsv = np.array(col_hsv, dtype=np.float32)
+def match_color(im_rgb, col_rgb, score_pow=1.3):
+    hsv_image = cv.cvtColor(im_rgb, cv.COLOR_RGB2HSV)
+    col_hsv = cv.cvtColor(np.array([[col_rgb]], dtype=np.uint8), cv.COLOR_RGB2HSV)[0, 0].astype(np.float32)
 
     s_channel = hsv_image[:, :, 1]
     v_channel = hsv_image[:, :, 2]
 
     # Calculate the squared Euclidean distance in the SV plane
     # The subtraction is broadcast across the entire arrays.
-    s_dist_sq = (s_channel - white_hsv[1])**score_pow
-    v_dist_sq = (v_channel - white_hsv[2])**score_pow
+    s_dist_sq = np.abs(s_channel - col_hsv[1])**score_pow
+    v_dist_sq = np.abs(v_channel - col_hsv[2])**score_pow
 
     # Calculate the Euclidean distance
     distance = np.sqrt(1. / (s_dist_sq + v_dist_sq + 1))

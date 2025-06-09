@@ -35,6 +35,22 @@ async def mouseMoveSmooth(ev_executor, dx, dy, n=8, move_delay=0.025, delay_rand
         await sleep(uniform(move_delay, move_delay + delay_rand))
 
 
+async def mouseSmoothTo(ev_executor, x, y, a=.55, move_delay=0.025, delay_rand=0.025):
+    loop = get_running_loop()
+    n = 32
+    while n:
+        n -= 1
+
+        cur_x, cur_y = mousePos()
+        dx = x - cur_x
+        dy = y - cur_y
+        if max(abs(dx), abs(dy)) < 4:
+            return
+
+        await loop.run_in_executor(ev_executor, mouseMove, int(dx*uniform(a * .5, a * 1.2)), int(dy*uniform(a * .5, a * 1.2)))
+        await sleep(uniform(move_delay, move_delay + delay_rand))
+
+
 def mousePos():
     cursor = POINT()
     GetCursorPos(ctypes.byref(cursor))
