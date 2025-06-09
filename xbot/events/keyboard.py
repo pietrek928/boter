@@ -146,6 +146,16 @@ EXTENDED_KEYS = {
 }
 
 def make_key_map():
+    special_keys = [
+        'ctrl', 'ctrlleft', 'ctrlright',
+        'alt', 'altleft', 'altright',
+        'shift', 'shiftleft', 'shiftright',
+        'enter', 'return', 'tab',
+        'space', 'backspace',
+        'delete', 'del', 'esc', 'escape',
+        'up', 'down', 'left', 'right'
+    ]
+
     key_map = {}
     for key_code in range(ord('A'), ord('Z') + 1):
         key_map[chr(key_code)] = (KEYBOARD_SCANCODE_MAPPING[chr(key_code).lower()], KEYBOARD_SCANCODE_MAPPING['shift'])
@@ -157,6 +167,9 @@ def make_key_map():
         key_map[char] = (KEYBOARD_SCANCODE_MAPPING[chr(ord('0') + it)], KEYBOARD_SCANCODE_MAPPING['shift'])
     for it in range(1,13): #f1-f12
         key_map[f'f{it}'] = (KEYBOARD_SCANCODE_MAPPING[f'f{it}'],)
+    for key in special_keys:
+        if key in KEYBOARD_SCANCODE_MAPPING:
+            key_map[key] = (KEYBOARD_SCANCODE_MAPPING[key],)
     # key_map.update({
     #     ' ': (win32con.VK_SPACE,),  # TODO: put rest of keys
     #     'enter': (win32con.VK_RETURN,),
