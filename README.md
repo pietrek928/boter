@@ -19,7 +19,7 @@ This is a simple test bot project.
 To run the bot, execute the following command:
 
 ```bash
-python event-test.py
+python -m xbot.game.game
 ```
 
 ## Contributing

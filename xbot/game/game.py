@@ -4,11 +4,10 @@ from random import uniform
 import numpy as np
 import cv2 as cv
 
-from xbot.events.keyboard import press_key, press_multiple_keys
-from xbot.vision.ocr import detect_text, get_ocr_reader
+from xbot.vision.ocr import detect_text, detect_text_in_boxes, find_im_boxes, get_ocr_reader, merge_boxes
 from xbot.vision.preprocess import match_color
+from xbot.events.keyboard import press_key, press_multiple_keys
 from xbot.events.mouse import mousePos, mouseSmoothTo
-
 from xbot.vision.screen import get_monitor_config, grab_frame, init_capture
 
 
@@ -128,5 +127,26 @@ async def fight():
     #     await mouseSmoothTo(x, p[0], p[1])
 
 
+def test_monster_detection():
+    reader = get_ocr_reader()
+    print('initialized')
+
+    im_orig = cv.imread('screens/monsters-1.png')
+    im = match_color(im_orig[..., ::-1], [235, 22, 9])
+    cv.imwrite('test2.png', im)
+    boxes = find_im_boxes(im, 10)
+    boxes = merge_boxes(boxes, 15)
+    print(boxes)
+
+    # Draw boxes
+    im_out = im_orig.copy()
+    for x1, y1, x2, y2 in boxes:
+        cv.rectangle(im_out, (x1, y1), (x2, y2), (0, 255, 0), 2)
+    cv.imwrite('test.png', im_out)
+
+    print(detect_text_in_boxes(reader, im, boxes))
+
+
 if __name__ == '__main__':
-    run(fight())
+    test_monster_detection()
+    # run(fight())
