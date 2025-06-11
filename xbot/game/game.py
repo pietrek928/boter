@@ -61,6 +61,24 @@ async def set_buf_skills(executor):
     await press_multiple_keys(executor, ["ctrl", "g"])
 
 
+async def do_metin(executor):
+    sct = await init_capture(executor)
+    reader = get_ocr_reader()
+    cfg = get_monitor_config(sct)
+    print('initialized')
+
+    await sleep(10)
+
+    # Mouse to monster
+    im = await grab_frame(executor, sct, cfg)
+    cv.imwrite('test.png', im)
+    text = await find_text(executor, reader, im, [235, 22, 9])
+    p = find_nearest_monster(text, 'dziki', (500, 500))
+    print(p)
+    if p:
+        await mouseSmoothTo(executor, p[0], p[1])
+
+
 async def farm_mobs():
     x = ThreadPoolExecutor()
 
