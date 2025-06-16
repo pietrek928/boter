@@ -1,13 +1,16 @@
 from asyncio import gather, get_running_loop, run, sleep
+import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from random import uniform
 import numpy as np
 import cv2 as cv
+import torch
+import regex
 
 from xbot.vision.ocr import detect_text, detect_text_in_boxes, find_im_boxes, get_ocr_reader, merge_boxes
 from xbot.vision.preprocess import match_color
 from xbot.events.keyboard import press_key, press_multiple_keys
-from xbot.events.mouse import mousePos, mouseSmoothTo
+from xbot.events.mouse import mousePos, mouseSmoothTo, mouseClick, MOUSEEVENTF_LEFTCLICK, MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP
 from xbot.vision.screen import get_monitor_config, grab_frame, init_capture
 
 
@@ -60,24 +63,6 @@ async def set_buf_skills(executor):
     await press_multiple_keys(executor, ["ctrl", "g"])
 
 
-async def do_metin(executor):
-    sct = await init_capture(executor)
-    reader = get_ocr_reader()
-    cfg = get_monitor_config(sct)
-    print('initialized')
-
-    await sleep(10)
-
-    # Mouse to monster
-    im = await grab_frame(executor, sct, cfg)
-    cv.imwrite('test.png', im)
-    text = await find_text(executor, reader, im, [235, 22, 9])
-    p = find_nearest_monster(text, 'dziki', (500, 500))
-    print(p)
-    if p:
-        await mouseSmoothTo(executor, p[0], p[1])
-
-
 async def farm_mobs():
     x = ThreadPoolExecutor()
 
@@ -127,13 +112,50 @@ async def fight():
     #     await mouseSmoothTo(x, p[0], p[1])
 
 
-def test_monster_detection():
+# Take photo of game screen
+async def take_photo(executor):
+    sct = await init_capture(executor)
+    cfg = get_monitor_config(sct)
+    reader = get_ocr_reader()
+    
+    await set_buf_skills(executor)
+
+    await sleep(5)
+    print("Take photo")
+
+    im = await grab_frame(executor, sct, cfg)
+    cv.imwrite('screens/test.png', im)
+
+
+# Find position of object
+def position(detections, pattern):
+    position=[] 
+    pattern = pattern.lower()
+    for box, text, score in detections:
+        matches = regex.findall(f"({pattern}){{e<=2}}", text.lower())
+        print(matches)
+        if matches:
+            # print(np.mean(box, axis=0))
+            x,y = np.mean(box, axis=0)
+            position.append((float(x),float(y)))
+    return position
+
+
+async def test_mouse():
+    await sleep(3)
+    mouseClick(MOUSEEVENTF_LEFTDOWN)
+    await sleep(1)
+    mouseClick(MOUSEEVENTF_LEFTUP)
+
+
+# Detect object
+async def test_monster_detection(executor):
     reader = get_ocr_reader()
     print('initialized')
 
-    im_orig = cv.imread('screens/monsters-1.png')
-    im = match_color(im_orig[..., ::-1], [235, 22, 9])
-    cv.imwrite('test2.png', im)
+    im_orig = cv.imread('screens/test.png')
+    im = match_color(im_orig[..., ::-1], [255,255,255])
+    cv.imwrite('screens/test2.png', im)
     boxes = find_im_boxes(im, 10)
     boxes = merge_boxes(boxes, 15)
     print(boxes)
@@ -142,11 +164,23 @@ def test_monster_detection():
     im_out = im_orig.copy()
     for x1, y1, x2, y2 in boxes:
         cv.rectangle(im_out, (x1, y1), (x2, y2), (0, 255, 0), 2)
-    cv.imwrite('test.png', im_out)
+    cv.imwrite('screens/test3.png', im_out)
+    
+    positionXY = position(detect_text_in_boxes(reader, im, boxes), "Metin")
 
-    print(detect_text_in_boxes(reader, im, boxes))
+    for x,y in positionXY:
+        cv.circle(im_out, (int(x), int(y)+60), 3, (0, 0, 255), -1)
+        await mouseSmoothTo(executor, int(x), int(y)+60)
+
+    
+    cv.imwrite('screens/test4.png', im_out)
 
 
 if __name__ == '__main__':
-    test_monster_detection()
-    # run(fight())
+    executor = ThreadPoolExecutor()
+    
+    print("Start!")
+    print(torch.cuda.is_available())
+    # asyncio.run(take_photo(executor))
+    # asyncio.run(test_monster_detection(executor))
+    asyncio.run(test_mouse())
