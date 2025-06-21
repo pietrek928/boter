@@ -60,7 +60,10 @@ def mousePos():
 def mouseClick(ev):
     extra = ctypes.c_ulong(0)
     ii_ = Input_I()
-    ii_.mi = MouseInput(0, 0, 0, ev, 0, ctypes.pointer(extra))
-    x = Input(ctypes.c_ulong(0), ii_)
-    SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
+    ii_.mi = MouseInput(0, 0, 0, ev , 0, ctypes.pointer(extra))
+    command = Input(ctypes.c_ulong(0), ii_)
+    SendInput(1, ctypes.pointer(command), ctypes.sizeof(command))
+    
+def mouseClick2(x,y):
+    ctypes.windll.user32.mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0,0,0,0)
 

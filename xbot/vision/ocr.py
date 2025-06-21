@@ -7,8 +7,7 @@ from rtree.index import Index
 def get_ocr_reader():
     return Reader(
         ['pl'], 
-        gpu=True,  # Enable GPU if available for faster processing
-        # model_storage_directory='~/model_storage',
+        gpu=True,
         download_enabled=True
     )
 
@@ -18,16 +17,16 @@ def detect_text(reader, im):
     return reader.readtext(
         im,
         decoder='beamsearch',  # Better for longer text
-        beamWidth=5,           # Higher value for more accuracy (but slower)
-        batch_size=1,         # Process multiple text instances at once
-        workers=1,             # Use multiple CPU cores
+        beamWidth=3,           # Higher value for more accuracy (but slower)
+        batch_size=1,          # Process multiple text instances at once
+        workers=0,             # Use multiple CPU cores
         allowlist=None,        # No character restrictions
         blocklist=None,        # No characters to exclude
         detail=1,              # Return detailed information
-        # paragraph=True,        # Group text into paragraphs when possible
-        min_size=60,           # Minimum text size to detect (in pixels)
+        paragraph=False,        # Group text into paragraphs when possible
+        min_size=55,           # Minimum text size to detect (in pixels)
         contrast_ths=0.3,      # Contrast threshold (lower for low-contrast text)
-        adjust_contrast=0.7,   # Adjust contrast for better detection
+        adjust_contrast=0.5,   # Adjust contrast for better detection
         text_threshold=0.15,    # Text confidence threshold
         low_text=0.05,         # Lower text confidence threshold
         link_threshold=0.4,    # Character linking threshold
